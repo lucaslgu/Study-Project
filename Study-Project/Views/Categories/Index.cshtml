@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Study_Project.Models.Category>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categorias";
 }
 
 <h1>Categorias</h1>
@@ -26,8 +26,8 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Detalhar</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Deletar</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Visualizar</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Apagar</a>
             </td>
         </tr>
 }
