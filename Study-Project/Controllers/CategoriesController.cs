@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Study_Project.Data;
 using Study_Project.Models;
+using Study_Project.Models.Converters;
 using Study_Project.Models.ViewModels;
 using Study_Project.Services;
 
@@ -17,10 +18,14 @@ namespace Study_Project.Controllers
     public class CategoriesController : Controller
     {
         private readonly CategoriesService _categoriesServices;
+        private readonly ProductsServices _productsServices;
 
-        public CategoriesController(CategoriesService categoriesServices)
+        CategoryConverter converter = new CategoryConverter();
+
+        public CategoriesController(CategoriesService categoriesServices, ProductsServices productsServices)
         {
             _categoriesServices = categoriesServices;
+            _productsServices = productsServices;
         }
 
         [HttpGet]
@@ -28,7 +33,15 @@ namespace Study_Project.Controllers
         {
             try
             {
-                return View(await _categoriesServices.GetCategoriesAsync());
+                var categories = await _categoriesServices.GetCategoriesAsync();
+                var models = new List<CategoryViewModel>();
+
+                foreach (var category in categories)
+                {
+                    models.Add(converter.CategoryEntityView(category));
+                }
+
+                return View(models);
             }
             catch (Exception e)
             {
@@ -51,7 +64,7 @@ namespace Study_Project.Controllers
                 {
                     return NotFound();
                 }
-                return View(category);
+                return View(converter.CategoryEntityView(category));
             }
             catch (Exception e)
             {
@@ -155,8 +168,12 @@ namespace Study_Project.Controllers
             try
             {
                 var category = await _categoriesServices.FindCategoryAsync(id);
+                var producs = await _productsServices.GetProductsForCategoryAsync(id);
 
-                return View(category);
+                if(producs.Count > 0)
+                    return View(category);
+
+                return View();
             }
             catch (Exception e)
             {

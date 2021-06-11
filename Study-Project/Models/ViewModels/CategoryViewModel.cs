@@ -14,5 +14,8 @@ namespace Study_Project.Models.ViewModels
         [DisplayName("Nome")]
         [Required(ErrorMessage = "Obrigatório preenchimento do campo!")]
         public string Name { get; set; }
+
+        [DisplayName("Produtos vinculados a essa categoria")]
+        public List<Product> Products { get; set; }
     }
 }

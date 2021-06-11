@@ -1,13 +1,13 @@
-﻿@model IEnumerable<Study_Project.Models.Product>
+﻿@model IEnumerable<Study_Project.Models.ViewModels.ProductViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Produtos";
 }
 
-<h1>Index</h1>
+<h1>Produtos</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Adicionar um novo produto</a>
 </p>
 <table class="table">
     <thead>
@@ -31,9 +31,9 @@
                 @Html.DisplayFor(modelItem => item.Value)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Ver sobre</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Excluir</a>
             </td>
         </tr>
 }

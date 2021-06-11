@@ -20,7 +20,7 @@ namespace Study_Project.Services
 
         public async Task<List<Category>> GetCategoriesAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories.Include(c => c.Products).ToListAsync();
         }
 
         public async Task<Category> GetCategoryAsync(int? id)
@@ -54,7 +54,7 @@ namespace Study_Project.Services
 
         public async Task<Category> FindCategoryAsync(int? id)
         {
-            return await _context.Categories.FindAsync(id);
+            return await _context.Categories.Include(c => c.Products).FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public bool CategoryExists(int? id)
