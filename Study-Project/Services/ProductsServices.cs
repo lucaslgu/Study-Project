@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Study_Project.Data;
 using Study_Project.Models;
-using Study_Project.Models.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +18,7 @@ namespace Study_Project.Services
 
         public async Task<List<Product>> GetProductsAsync()
         {
-            return await _context.Products.ToListAsync();
+            return await _context.Products.Include(p => p.Category).ToListAsync();
         }
 
         public async Task<Product> GetProductAsync(int? id)
@@ -48,11 +46,6 @@ namespace Study_Project.Services
             var product = await _context.Products.FindAsync(id);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task<Product> FindProductAsync(int? id)
-        {
-            return await _context.Products.FindAsync(id);
         }
 
         public bool ProductExists(int? id)

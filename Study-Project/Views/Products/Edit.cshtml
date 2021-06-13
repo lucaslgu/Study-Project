@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Editar produto";
+    var categories = Model.CategorySelect;
 }
 
 <h1>Editar produto</h1>
@@ -22,6 +23,25 @@
                 <label asp-for="Value" class="control-label"></label>
                 <input asp-for="Value" class="form-control" />
                 <span asp-validation-for="Value" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategorySelect" class="control-label"></label>
+                <select name="categoryId" class="form-control">
+                    @if (categories != null)
+                    {
+                        @foreach (var item in categories)
+                        {
+                            if (item.Id == Model.Category.Id)
+                            {
+                                <option selected value="@item.Id">@item.Name</option>
+                            }
+
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+                <a asp-controller="Categories" asp-action="Create">Adicionar nova categoria</a>
+                <span asp-validation-for="CategorySelect" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Alterar" class="btn btn-primary" />

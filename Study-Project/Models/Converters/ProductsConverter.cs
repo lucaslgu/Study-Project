@@ -1,26 +1,33 @@
 ﻿using Study_Project.Models.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Study_Project.Services;
 using System.Threading.Tasks;
 
 namespace Study_Project.Models.Converters
 {
     public class ProductsConverter
     {
-        public Product ProductViewEntity(ProductViewModel productViewModel)
+        private readonly CategoriesService _categoriesService;
+
+        public ProductsConverter(CategoriesService categoriesService)
         {
-            var product = new Product(productViewModel.Id, productViewModel.Description, productViewModel.Value, productViewModel.CategoryId);
+            _categoriesService = categoriesService;
+        }
+
+        public Product ProductViewEntity(ProductViewModel productViewModel, int categoryId)
+        {
+            var product = new Product(productViewModel.Id, productViewModel.Description, productViewModel.Value, categoryId);
             return product;
         }
 
-        public ProductViewModel ProductEntityView(Product product)
+        public async Task<ProductViewModel> ProductEntityView(Product product)
         {
             var model = new ProductViewModel
             {
                 Id = product.Id,
+                Value = product.Value,
                 Description = product.Description,
-                CategoryId = product.CategoryId
+                Category = new Category(product.CategoryId, product.Category.Name),
+                CategorySelect = await _categoriesService.GetCategoriesAsync()
             };
 
             return model;

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Study_Project.Data;
-using Study_Project.Models;
 using Study_Project.Models.Converters;
 using Study_Project.Models.ViewModels;
 using Study_Project.Services;
@@ -18,11 +14,15 @@ namespace Study_Project.Controllers
     public class ProductsController : Controller
     {
         private readonly ProductsServices _productsServices;
-        ProductsConverter converter = new ProductsConverter();
+        private readonly CategoriesService _categoriesServices;
 
-        public ProductsController(ProductsServices productsServices)
+        private readonly ProductsConverter _converter;
+
+        public ProductsController(ProductsServices productsServices, CategoriesService categoriesServices)
         {
             _productsServices = productsServices;
+            _categoriesServices = categoriesServices;
+            _converter = new ProductsConverter(categoriesServices);
         }
 
         [HttpGet]
@@ -34,7 +34,7 @@ namespace Study_Project.Controllers
                 var models = new List<ProductViewModel>();
                 foreach (var product in products)
                 {
-                    models.Add(converter.ProductEntityView(product));
+                    models.Add(await _converter.ProductEntityView(product));
                 }
                 return View(models);
             }
@@ -60,7 +60,7 @@ namespace Study_Project.Controllers
                     return NotFound();
                 }
 
-                return View(converter.ProductEntityView(product));
+                return View(await _converter.ProductEntityView(product));
             }
             catch (Exception e)
             {
@@ -69,20 +69,23 @@ namespace Study_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var categories = await _categoriesServices.GetCategoriesAsync();
+            var model = new ProductViewModel(categories);
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductViewModel model)
+        public async Task<IActionResult> Create(ProductViewModel model, int categoryId)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _productsServices.CreateProductAsync(converter.ProductViewEntity(model));
+                    await _productsServices.CreateProductAsync(_converter.ProductViewEntity(model, categoryId));
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception e)
@@ -93,6 +96,7 @@ namespace Study_Project.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -102,12 +106,12 @@ namespace Study_Project.Controllers
 
             try
             {
-                var product = await _productsServices.FindProductAsync(id);
+                var product = await _productsServices.GetProductAsync(id);
                 if (product == null)
                 {
                     return NotFound();
                 }
-                return View(converter.ProductEntityView(product));
+                return View(await _converter.ProductEntityView(product));
             }
             catch (Exception e)
             {
@@ -117,7 +121,7 @@ namespace Study_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ProductViewModel model)
+        public async Task<IActionResult> Edit(int id, int categoryId, ProductViewModel model)
         {
             if (id != model.Id)
             {
@@ -128,7 +132,7 @@ namespace Study_Project.Controllers
             {
                 try
                 {
-                    await _productsServices.EditProductAsync(converter.ProductViewEntity(model));
+                    await _productsServices.EditProductAsync(_converter.ProductViewEntity(model, categoryId));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -160,14 +164,14 @@ namespace Study_Project.Controllers
 
             try
             {
-                var product = await _productsServices.FindProductAsync(id);
+                var product = await _productsServices.GetProductAsync(id);
 
                 if (product == null)
                 {
                     return NotFound();
                 }
 
-                return View(converter.ProductEntityView(product));
+                return View(await _converter.ProductEntityView(product));
             }
             catch (Exception e)
             {
