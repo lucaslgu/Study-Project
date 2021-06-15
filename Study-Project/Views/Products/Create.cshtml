@@ -1,7 +1,7 @@
 ﻿@model Study_Project.Models.ViewModels.ProductViewModel
-
 @{
     ViewData["Title"] = "Adicionar Produto";
+    var categories = Model.CategorySelect;
 }
 
 <h1>Adicionar Produto</h1>
@@ -23,21 +23,28 @@
                 <span asp-validation-for="Value" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <datalist class="form-control">
-                    <option value="" />
-                </datalist>
-                <span asp-validation-for="Value" class="text-danger"></span>
+                <label asp-for="CategorySelect" class="control-label"></label>
+                <select name="categoryId" class="form-control">
+                    @if (categories != null)
+                    {
+                        @foreach (var item in categories)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+                <a asp-controller="Categories" asp-action="Create">Adicionar nova categoria</a>
+                <span asp-validation-for="CategorySelect" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Adicionar produto" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar</a>
 </div>
 
 @section Scripts {
