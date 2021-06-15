@@ -40,6 +40,7 @@ namespace Study_Project
 
             services.AddScoped<CategoriesService>();
             services.AddScoped<ProductsServices>();
+            services.AddScoped<ExpensesServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

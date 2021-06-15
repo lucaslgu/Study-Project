@@ -17,8 +17,10 @@ namespace Study_Project.Data
             base.OnModelCreating(builder);
 
             builder.Entity<Category>().HasMany(c => c.Products).WithOne(p => p.Category);
+            builder.Entity<Category>().HasMany(c => c.Expenses).WithMany(p => p.Categories);
 
             builder.Entity<Product>().HasOne(p => p.Category).WithMany(c => c.Products);
+            builder.Entity<Product>().HasMany(p => p.Expenses).WithMany(c => c.Products);
 
             builder.Entity<Expense>().HasMany(p => p.Categories).WithMany(c => c.Expenses);
             builder.Entity<Expense>().HasMany(p => p.Products).WithMany(c => c.Expenses);
